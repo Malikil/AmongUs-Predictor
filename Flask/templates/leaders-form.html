@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            br {
+                margin-top: 8px;
+            }
+        </style>
+    </head>
+    <body>
+        <form action="/leaders" method="post">
+            <h2>Leaderboard for Game Settings</h2>
+            
+            <label for="map">Map</label>
+            <select name="map" id="map">
+                <option value="The Skeld">The Skeld</option>
+                <option value="MIRA HQ">MIRA HQ</option>
+                <option value="Polus">Polus</option>
+                <option value="Airship">Airship</option>
+            </select>
+            <br />
+            <label for="confirm_ejects">Confirm Ejects</label>
+            <input type="checkbox" name="confirm_ejects" id="confirm_ejects" checked />
+            <br />
+            <label for="emergency_meetings">Emergency Meetings</label>
+            <input type="number" min="0" max="9" step="1" value="1" name="emergency_meetings" id="emergency_meetings" />
+            <br />
+            <label for="emergency_cooldown">Emergency Cooldown</label>
+            <input type="number" min="0" max="60" step="5" value="20" name="emergency_cooldown" id="emergency_cooldown" />
+            <br />
+            <label for="discussion_time">Discussion Time</label>
+            <input type="number" min="0" max="120" step="15" value="15" name="discussion_time" id="discussion_time" />
+            <br />
+            <label for="voting_time">Voting Time</label>
+            <input type="number" min="0" max="300" step="15" value="120" name="voting_time" id="voting_time" />
+            <br />
+            <label for="anonymous_votes">Anonymous Votes</label>
+            <input type="checkbox" name="anonymous_votes" id="anonymous_votes" />
+            <br />
+            <label for="player_speed">Player Speed</label>
+            <input type="number" min="0.5" max="3.0" step="0.25" value="1.0" name="player_speed" id="player_speed" />
+            <br />
+            <label for="crewmate_vision">Crewmate Vision</label>
+            <input type="number" min="0.25" max="5.0" step="0.25" value="1.0" name="crewmate_vision" id="crewmate_vision" />
+            <br />
+            <label for="impostor_vision">Impostor Vision</label>
+            <input type="number" min="0.25" max="5.0" step="0.25" value="1.0" name="impostor_vision" id="impostor_vision" />
+            <br />
+            <label for="kill_cooldown">Kill Cooldown</label>
+            <input type="number" min="10" max="60" step="2.5" value="30.0" name="kill_cooldown" id="kill_cooldown" />
+            <br />
+            <label for="kill_distance">Kill Distance</label>
+            <select name="kill_distance" id="kill_distance">
+                <option value="Short">Short</option>
+                <option value="Medium">Medium</option>
+                <option value="Long">Long</option>
+            </select>
+            <br />
+            <label for="visual_tasks">Visual Tasks</label>
+            <input type="checkbox" name="visual_tasks" id="visual_tasks" checked />
+            <br />
+            <label for="task_bar_updates">Task Bar Updates</label>
+            <select name="task_bar_updates" id="task_bar_updates">
+                <option value="Always">Always</option>
+                <option value="Meetings">Meetings</option>
+                <option value="Never">Never</option>
+            </select>
+            <br />
+            <label for="common_tasks">Common Tasks</label>
+            <input type="number" min="0" max="2" step="1" value="1" name="common_tasks" id="common_tasks" />
+            <br />
+            <label for="long_tasks">Long Tasks</label>
+            <input type="number" min="0" max="3" step="1" value="2" name="long_tasks" id="long_tasks" />
+            <br />
+            <label for="short_tasks">Short Tasks</label>
+            <input type="number" min="0" max="5" step="1" value="3" name="short_tasks" id="short_tasks" />
+            <br />
+            <br />
+            <input type="submit" />
+        </form>
+    </body>
+</html>
