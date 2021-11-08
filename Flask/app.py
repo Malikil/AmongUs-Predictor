@@ -8,6 +8,8 @@ app = Flask(__name__)
 def validate_data(form_data):
     data = {}
     keys = [
+        ('player_count', int),
+        ('impostor_count', int),
         ('map', str),
         ('confirm_ejects', bool),
         ('emergency_meetings', int),
