@@ -2,8 +2,10 @@ from flask import Flask
 from flask import request
 from flask import render_template
 from flask import redirect
+from custom_classes import Predictor
 
 app = Flask(__name__)
+model = Predictor.load('model')
 
 def validate_data(form_data):
     data = {}
@@ -44,11 +46,10 @@ def leaders():
         return redirect('/')
         
     # Get some leaders
-    print(jdata)
-
-    return {
-        'settings': jdata
-    }
+    # This will be sloooooooooow, but I'll make it work first and
+    # deal with speed later
+    leaders = model.get_leaders(jdata, verbose=True)
+    return render_template('leaders.html', leaders=leaders)
 
 if __name__ == '__main__':
     app.run(debug=True)

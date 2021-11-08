@@ -1,7 +1,39 @@
 <!DOCTYPE html>
 <html>
-    <head></head>
+    <head>
+        <style>
+            table {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+
+            thead {
+                border-bottom: 1px solid black;
+            }
+
+            th, td {
+                border-left: 1px solid black;
+                border-right: 1px solid black;
+                padding: 0.1ex 1ex 0.1ex 1ex;
+            }
+        </style>
+    </head>
     <body>
-        Nothing here yet
+        <table>
+            <thead>
+                <tr>
+                    <th>Player</th>
+                    <th>Wins in generated games</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rank in leaders %}
+                <tr>
+                    <td>{{ rank[0] }}</td>
+                    <td>{{ rank[1] }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </body>
 </html>
