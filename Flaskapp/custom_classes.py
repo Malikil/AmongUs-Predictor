@@ -107,7 +107,7 @@ class Predictor:
             epochs = epochs
         )
 
-    def get_leaders(self, settings, *, verbose=True):
+    def get_leaders(self, settings, *, verbose=False):
         '''
         Gets the ranking of all known players for given game settings
 
