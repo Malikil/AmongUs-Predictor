@@ -1,6 +1,7 @@
 import json
 import numpy as np
 import tensorflow as tf
+from itertools import combinations
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.callbacks import EarlyStopping
@@ -106,6 +107,83 @@ class Predictor:
             epochs = epochs
         )
 
+    def get_leaders(self, settings, *, verbose=True):
+        '''
+        Gets the ranking of all known players for given game settings
+
+        Settings must include:
+            * map
+            * player_count
+            * impostor_count
+            * confirm_ejects
+            * emergency_meetings
+            * emergency_cooldown
+            * discussion_time
+            * voting_time
+            * anonymous_votes
+            * player_speed
+            * crewmate_vision
+            * impostor_vision
+            * kill_cooldown
+            * kill_distance
+            * visual_tasks
+            * task_bar_updates
+            * common_tasks
+            * long_tasks
+            * short_tasks
+        '''
+        # This might get expensive. Make sure the player counts are actually valid
+        # before continuing
+        if settings['player_count'] <= settings['impostor_count'] * 3:
+            raise ValueError('Not enough players for impostor count')
+        crew_count = settings['player_count'] - settings['impostor_count']
+
+        # Use the known players to construct all possible matchups with these settings
+        # I haven't actually done the counting for how many permutations that could
+        # turn into. If it turns out there's just way too many possible matches then
+        # I'll just take a subset or something.
+        if verbose:
+            print('Create impostor combinations')
+        rng = np.random.default_rng()
+        player_list = list(self._penc._encodings.keys())
+        impostor_combs = list(combinations(player_list, settings['impostor_count']))
+        impostors = rng.choice(impostor_combs, min(len(impostor_combs), 100), replace=False)
+        matches = []
+        match_inputs = []
+        if verbose:
+            print('Create crewmate combinations ', end='')
+        iverb = 0
+        lastverb = 0
+        for imp in impostors:
+            candidates = np.setdiff1d(player_list, imp)
+            crewmate_combs = list(combinations(candidates, crew_count))
+            crewmates = rng.choice(crewmate_combs, min(len(crewmate_combs), 1000), replace=False)
+            limp = list(imp)
+            for crew in crewmates:
+                m = {
+                    **settings,
+                    'impostors': limp,
+                    'crewmates': list(crew)
+                }
+                matches.append(m)
+                match_inputs.append(self.__convert_match_pred(m))
+            if verbose:
+                iverb += 1
+                if (iverb * 75 / len(impostors)) > lastverb:
+                    print('*', end='')
+                    lastverb += 1
+        if verbose:
+            print('\nGenerate results')
+        results = self._model.predict(np.array(match_inputs))
+        if verbose:
+            print('Count wins')
+        wins = {p:0 for p in player_list}
+        for match,result in zip(matches, results):
+            winner = self._wenc.inverse_transform([np.round(result)])[0,0]
+            for p in match[winner]:
+                wins[p] += 1
+        return sorted(wins.items(), key=lambda x: x[1], reverse=True)
+
     def __preprocess(self, matches):
         inputs = []
         targets = []
@@ -117,7 +195,7 @@ class Predictor:
         targets = np.array(targets)
         return (inputs, targets)
 
-    def __convert_match_result(self, match):
+    def __convert_match_pred(self, match):
         crewmates = list(self._penc.transform([match['crewmates']])[0])
         impostors = list(self._penc.transform([match['impostors']])[0])
         map_played = list(self._menc.transform([[match['map']]])[0])
@@ -142,10 +220,17 @@ class Predictor:
             match['long_tasks'],
             match['short_tasks']
         ])
+        return inputs
+
+    def __convert_match_result(self, match):
+        inputs = self.__convert_match_pred(match)
         # Convert winners
         winner = self._wenc.transform([[match['match_winner']]])[0]
         
         return (inputs, winner)
+
+    def summary(self):
+        return self._model.summary()
 
     def save(self, path):
         # Write model
